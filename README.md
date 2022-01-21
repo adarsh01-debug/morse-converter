@@ -11,25 +11,25 @@ Multiple spaces (tab character) - word change/line change
 
 # How to execute:
 
-## To convert text to morse code:
+### To convert text to morse code:
 $ ./morse.sh fileName.txt
 
-## To convert morse code to text:
+### To convert morse code to text:
 $ ./morse.sh fileName.morse
 
 # Algorithm:
 
-## STEP 1:
+### STEP 1:
 Declare 2 associative arrays, i.e, morse and letters. Morse array will have letters/numbers as keys and their equivalent morse code as value. Letters array will have morse codes as keys and equivalent letters/numbers as value.
 
-## STEP 2:
+### STEP 2:
 Take the argument from command line and check its validity, i.e., if file exists or not. If file does exist then check for its extention type, i.e., whether it is a txt or morse file.
 
-## STEP 3:
+### STEP 3:
 Call txt_to_morse function with the file itself as the parameter if the file is of text type.
 Call morse_to_txt function with the file itself as the parameter if the file is of morse type.
 
-## STEP 4:
+### STEP 4:
 In txt_to_morse:
 -Read the file content line by line and convert each character to its equivalent morse code from refering to the morse array.
 -If we encounter space or new line then replace it by tab character.
