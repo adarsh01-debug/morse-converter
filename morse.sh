@@ -21,10 +21,10 @@ Multiple spaces (tab character) - word change/line change
 How to execute:
 
 To convert text to morse code:
-$ ./1.sh fileName.txt
+$ ./morse.sh fileName.txt
 
 To convert morse code to text:
-$ ./1.sh fileName.morse
+$ ./morse.sh fileName.morse
 
 --------------------------------------------------------------------
 Algorithm:
