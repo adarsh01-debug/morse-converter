@@ -7,77 +7,204 @@
 --------------------------------------------------------------------
 Problem Statement:
 
-Write a bash script to remove c comments from given c file i.e. 
-the script should accept a filename as argument and it should remove 
-both single line and multi lines comments from the given file content 
-and print the output in stdout.
+Write a morse code converter using bash. Bash script should accept a file as argument.
+- if the file name ends with .morse, it should convert morse code into text.
+- if the file name ends with .txt, it should convert text into morse code.
+
+--------------------------------------------------------------------
+Convention for morse:
+
+Single space in morse - character change
+Multiple spaces (tab character) - word change/line change
 
 --------------------------------------------------------------------
 How to execute:
 
 To convert text to morse code:
-$ ./2.sh fileName.c
+$ ./1.sh fileName.txt
+
+To convert morse code to text:
+$ ./1.sh fileName.morse
 
 --------------------------------------------------------------------
 Algorithm:
 
-The idea is to maintain two flag variables, one to indicate that a single line comment is started,
-another to indicate that a multiline comment is started. When a flag is set,
-we look for the end of comment and ignore all characters between start and end.
+STEP 1:
+Declare 2 associative arrays, i.e, morse and letters. Morse array will have letters/numbers as keys and their equivalent morse code as value. Letters array will have morse codes as keys and equivalent letters/numbers as value.
+
+STEP 2:
+Take the argument from command line and check its validity, i.e., if file exists or not. If file does exists then check for its extention type, i.e., whether it is a txt or morse file.
+
+STEP 3:
+Call txt_to_morse function with the file itself as the parameter if the file is of text type.
+Call morse_to_txt function with the file itself as the parameter if the file is of morse type.
+
+STEP 4:
+In txt_to_morse:
+-Read the file content line by line and convert each character to its equivalent morse code from refering to the morse array.
+-If we encounter space of new line then replace it by tab character.
+
+In morse_to_txt:
+-Read the file content line by line and if the character equals . or - then append it to an initially empty string str1.
+-Keep on appending until we encounter new line character or tab character, in which case we will print the str1 and make str1 empty again.
 
 --------------------------------------------------------------------
 comment
 
-# Check given file exists
-program=`echo $0|sed -e 's:.*/::'`
-if [ "$#" = 1 ] && [ "$1" != "-" ] && [ ! -f "$1" ]
-then
-        printf "$program: $1 does not exist\n"
-        exit 2
-fi
+# ==================================================================
+# Associative array (hash table) to store morse values of letters
+# ==================================================================
+declare -A morse
+morse[A]='.-'
+morse[B]='-...'
+morse[C]='-.-.'
+morse[D]='-..'
+morse[E]='.'
+morse[F]='..-.'
+morse[G]='--.'
+morse[H]='....'
+morse[I]='..'
+morse[J]='.---'
+morse[K]='-.-'
+morse[L]='.-..'
+morse[M]='--'
+morse[N]='-.'
+morse[O]='---'
+morse[P]='.--.'
+morse[Q]='--.-'
+morse[R]='.-.'
+morse[S]='...'
+morse[T]='-'
+morse[U]='..-'
+morse[V]='...-'
+morse[W]='.--'
+morse[X]='-..-'
+morse[Y]='-.--'
+morse[Z]='--..'
+morse[0]='-----'
+morse[1]='.----'
+morse[2]='..---'
+morse[3]='...--'
+morse[4]='....-'
+morse[5]='.....'
+morse[6]='-....'
+morse[7]='--...'
+morse[8]='---..'
+morse[9]='----.'
+morse[.]='.-.-.-'
+morse[,]='--..--'
+morse[?]='..__..'
+morse[=]='-...-'
 
-prgm=`cat $1` #storing file content to a variable
+# ==================================================================
+# Associative array (hash table) to store letter values of morse codes
+# ==================================================================
 
-n=${#prgm} #number of characters in the file
-res=''
+declare -A letter
+letter[.-]='A'
+letter[-...]='B'
+letter[-.-.]='C'
+letter[-..]='D'
+letter[.]='E'
+letter[..-.]='F'
+letter[--.]='G'
+letter[....]='H'
+letter[..]='I'
+letter[.---]='J'
+letter[-.-]='K'
+letter[.-..]='L'
+letter[--]='M'
+letter[-.]='N'
+letter[---]='O'
+letter[.--.]='P'
+letter[--.-]='Q'
+letter[.-.]='R'
+letter[...]='S'
+letter[-]='T'
+letter[..-]='U'
+letter[...-]='V'
+letter[.--]='W'
+letter[-..-]='X'
+letter[-.--]='Y'
+letter[--..]='Z'
+letter[-----]='0'
+letter[.----]='1'
+letter[..---]='2'
+letter[...--]='3'
+letter[....-]='4'
+letter[.....]='5'
+letter[-....]='6'
+letter[--...]='7'
+letter[---..]='8'
+letter[----.]='9'
+letter[.-.-.-]='.'
+letter[--..--]=','
+letter[..--..]='?'
+letter[-...-]='='
 
-#Flags to indicate that single line and multiple line comments have started or not.
-s_cmt="false"
-m_cmt="false"
+# ==================================================================
 
-#Traverse the given program
-for (( i=0; i<$n; i++ ))
-do
-	if [[ "$s_cmt" == "false" && "$m_cmt" == "false" && "${prgm:$i:6}" == "printf" ]]
-	then
-		while [[ "${prgm:$i:1}" != ';' ]]
-		do
-			res=$res${prgm:$i:1}
-			((i++))
-		done
-	fi
+# custom function to convert morse code to text
+function morse_to_txt()
+{
+	echo -e "Your morse code to text is : \n"
+	str1='' #initial empty string to form proper morse code
+    	while IFS= read -rN1 c #to read each line in the file character by character
+    	do
+		if [[ "$c" == '.' || "$c" == "-" ]]
+		then
+			str1=$str1$c #concatinating . and -
+		elif [[ "$c" == $'\n' || "$c" == $'\t' ]]
+		then
+			printf " " #replacing \n and \t with an empty space
+		else	
+			if [[ "$str1" != '' ]]
+			then
+				printf '%s' "${letter[$str1]}" #printing letter if single space or anyting else is encountered
+				str1='' #making string empty again for next letter
+			fi
+		fi
+    	done < "$1"
+    	printf "\n"
+}
+
+# custom function to convert text to morse code
+function txt_to_morse()
+{
+	echo -e "Your text to morse code is : \n"
+    	while IFS= read -rN1 c #to read each line in the file character by character
+    	do
+        	c=${c^} #capitalising each letter just in case
+		if [[ $c == $'\n' || $c == ' ' ]]
+		then
+			printf "\t" #replacing \n and spaces with tab character
+		else
+			printf '%s ' "${morse[$c]}" #printing equivalent morse code for the character
+		fi
+    	done < "$1"
+    	printf "\n"
+}
+
+# custom function to get extention of the file name passed
+function grab_extension()
+{
+	fileName=$1
+	extension=${fileName##*.} #seperates extension from the file name and stores it into variable name extension
 	
-	if [[ "$s_cmt" == "true" && "${prgm:$i:1}" == $'\n' ]] #If single line comment flag is on, then check for end of it
+	if [ "$extension" == 'txt' ]
 	then
-		s_cmt="false"
-	elif [[ "$m_cmt" == "true" && "${prgm:$i:1}" == '*' && "${prgm:$((i+1)):1}" == '/' && $i -lt $(( n-1 )) && "${prgm:$((i+2)):1}" != '/' ]] #If multiple line comment is on, then check for end of it
+		txt_to_morse $fileName #calling txt_to_morse if extension is .txt
+	elif [ "$extension" == 'morse' ]
 	then
-		m_cmt="false"
-		((i++))
-	elif [[ "$s_cmt" == "true" || "$m_cmt" == "true" ]] #If this character is in a comment, ignore it
-	then
-		continue
-	elif [[ "${prgm:$i:1}" == '/' && "${prgm:$((i+1)):1}" == '/' ]] #Check for beginning of comments and set the appropriate flags
-	then
-		s_cmt="true"
-		((i++))
-	elif [[ "${prgm:$i:1}" == '/' && "${prgm:$((i+1)):1}" == '*' ]] #Check for beginning of comments and set the appropriate flags
-	then
-		m_cmt="true"
-		((i++))
+		morse_to_txt $fileName #calling morse_totxt if extension is .morse
 	else
-		res=$res${prgm:$i:1} #If current character is a non-comment character, append it to res
+		echo "$extension ...what kind of extention is that\!\?" #telling user if some other extension is encountered
 	fi
-done
+}
 
-echo "$res"
+if [ -f "$1" ] #checking if file provided exists or not
+then
+    grab_extension $1 #calling function to get extension if the file exists
+else
+    echo "$1 doesn't exist" #telling user if file doesn't exists
+fi
