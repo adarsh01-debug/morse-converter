@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Author: 1929196
+# Author: Adarsh
 # Created: 17.01.2022
 
 << comment
