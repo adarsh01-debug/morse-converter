@@ -6,8 +6,8 @@ Write a morse code converter using bash. Bash script should accept a file as arg
 
 # Convention for morse:
 
-Single space in morse - character change
-Multiple spaces (tab character) - word change/line change
+- Single space in morse - character change
+- Multiple spaces (tab character) - word change/line change
 
 # How to execute:
 
